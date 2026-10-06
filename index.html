@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#09061a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Scalp City" />
+  <title>Scalp City V1</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="cityCanvas" aria-hidden="true"></canvas>
+    <div class="atmosphere"></div>
+
+    <header class="topbar glass">
+      <div class="brand">
+        <div class="crown">♛</div>
+        <div>
+          <div class="brand-title">SCALP <span>CITY</span> <b>V1</b></div>
+          <div class="brand-sub">TRADE · TEST · VALIDATE · REPEAT</div>
+        </div>
+      </div>
+      <button class="market-pill" id="marketPill"><span class="dot"></span><span id="marketText">RESEARCH IDLE</span></button>
+    </header>
+
+    <main class="scene">
+      <section class="ticker-row">
+        <article class="ticker-card glass green">
+          <div class="ticker-head"><b>QQQ</b><span id="qqqPrice">—</span></div>
+          <canvas id="qqqChart" width="500" height="190"></canvas>
+        </article>
+        <article class="ticker-card glass magenta">
+          <div class="ticker-head"><b>SPY</b><span id="spyPrice">—</span></div>
+          <canvas id="spyChart" width="500" height="190"></canvas>
+        </article>
+        <article class="ticker-card glass blue">
+          <div class="ticker-head"><b>IWM</b><span id="iwmPrice">—</span></div>
+          <canvas id="iwmChart" width="500" height="190"></canvas>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <aside class="scanner glass">
+          <h3>SIGNAL SCANNER</h3>
+          <div class="scanner-sub">LIVE RESEARCH THOUGHTS</div>
+          <div id="signalLog" class="signal-log"></div>
+        </aside>
+
+        <article class="main-monitor glass">
+          <div class="monitor-head">
+            <span><b id="mainSymbol">SPY</b> · 1m replay</span>
+            <span id="generationLabel">GEN 0</span>
+          </div>
+          <canvas id="mainChart" width="1000" height="570"></canvas>
+          <div class="chart-legend">
+            <span><i class="legend-line vwap"></i>VWAP</span>
+            <span><i class="legend-line ema"></i>EMA</span>
+            <span id="tradeState">WAITING</span>
+          </div>
+        </article>
+
+        <aside class="right-stack">
+          <section class="earned glass">
+            <small>SIMULATED · SESSION</small>
+            <strong id="sessionPnl">£0</strong>
+            <div><span id="tradeCount">0 trades</span> · <span id="winRate">0% win</span></div>
+          </section>
+
+          <section class="leaderboard glass">
+            <h3>🏆 CHALLENGERS</h3>
+            <div id="leaderRows"></div>
+          </section>
+        </aside>
+      </section>
+
+      <section class="desk-zone">
+        <div class="robot">
+          <div class="antenna"></div>
+          <div class="head"><div class="visor"></div><div class="ear"></div></div>
+          <div class="neck"></div>
+          <div class="body"><div class="body-light"></div></div>
+          <div class="arm arm-l"></div>
+          <div class="arm arm-r"></div>
+          <div class="chair"></div>
+        </div>
+        <div class="desk">
+          <div class="desk-glow"></div>
+          <div class="keyboard">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <button id="emergencyStop" class="desk-button danger">STOP</button>
+          <button id="syncPulse" class="desk-button safe">SYNC</button>
+        </div>
+        <div class="floor-ring ring1"></div>
+        <div class="floor-ring ring2"></div>
+        <div class="floor-ring ring3"></div>
+      </section>
+
+      <section class="research-bar glass">
+        <div><small>SESSION</small><strong id="runtime">00:00:00</strong></div>
+        <div><small>EXPERIMENTS</small><strong id="experimentCount">0</strong></div>
+        <div><small>SURVIVORS</small><strong id="survivorCount">0</strong></div>
+        <div><small>BEST SCORE</small><strong id="bestScore">—</strong></div>
+        <div><small>WORKERS</small><strong id="workerCount">0</strong></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav glass">
+      <button id="enterBtn" class="nav-action primary"><span>⚗</span><b>ENTER</b><small>START TRAINING</small></button>
+      <button id="dataBtn" class="nav-action"><span>▤</span><b>DATA</b><small>CSV / SYNTH</small></button>
+      <button id="githubBtn" class="nav-action"><span>⌁</span><b>GITHUB</b><small>MEMORY</small></button>
+      <button id="exitBtn" class="nav-action locked"><span>⏻</span><b>SAVE + EXIT</b><small>STOP + SYNC</small></button>
+    </nav>
+  </div>
+
+  <dialog id="dataDialog" class="modal">
+    <form method="dialog" class="modal-card glass">
+      <div class="modal-head"><h2>Market Data</h2><button value="cancel">✕</button></div>
+      <p>V1 ships with deterministic synthetic QQQ/SPY/IWM candles so the lab works immediately. You can replace a symbol with your own CSV.</p>
+      <label class="field">Symbol
+        <select id="csvSymbol"><option>QQQ</option><option>SPY</option><option>IWM</option></select>
+      </label>
+      <label class="file-field">Import CSV
+        <input id="csvInput" type="file" accept=".csv,text/csv" />
+      </label>
+      <p class="hint">CSV columns: <code>time,open,high,low,close,volume</code></p>
+      <button id="resetSynthetic" type="button" class="wide-btn">RESET SYNTHETIC DATA</button>
+    </form>
+  </dialog>
+
+  <dialog id="githubDialog" class="modal">
+    <form method="dialog" class="modal-card glass" id="githubForm">
+      <div class="modal-head"><h2>GitHub Memory</h2><button value="cancel">✕</button></div>
+      <p>Use a fine-grained token limited to this repository with <b>Contents: Read and write</b>. The token stays only in this open page/session.</p>
+      <label class="field">Owner<input id="ghOwner" placeholder="your-github-user" autocomplete="off"></label>
+      <label class="field">Repository<input id="ghRepo" placeholder="ScalpCity" autocomplete="off"></label>
+      <label class="field">Branch<input id="ghBranch" value="main" autocomplete="off"></label>
+      <label class="field">Knowledge filename prefix<input id="ghPath" value="knowledge" autocomplete="off"></label>
+      <label class="field">Fine-grained token<input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off"></label>
+      <div class="two-buttons">
+        <button id="testGithub" type="button" class="wide-btn">TEST + LOAD KNOWLEDGE</button>
+        <button value="cancel" class="wide-btn subtle">CLOSE</button>
+      </div>
+      <div id="ghStatus" class="status-line">Not connected</div>
+    </form>
+  </dialog>
+
+  <dialog id="exitDialog" class="modal">
+    <div class="modal-card glass">
+      <div class="modal-head"><h2>Session Save</h2></div>
+      <div id="exitSteps" class="exit-steps"></div>
+      <button id="closeExit" class="wide-btn" style="display:none">CLOSE SESSION</button>
+    </div>
+  </dialog>
+
+  <input id="hiddenCsv" hidden type="file" />
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
