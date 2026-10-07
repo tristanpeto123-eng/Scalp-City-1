@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#09061a" />
+  <meta name="theme-color" content="#05030d" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Scalp City" />
@@ -15,45 +15,67 @@
 <body>
   <div id="app">
     <canvas id="cityCanvas" aria-hidden="true"></canvas>
-    <div class="atmosphere"></div>
+    <div class="city-haze" aria-hidden="true"></div>
 
-    <header class="topbar glass">
-      <div class="brand">
-        <div class="crown">♛</div>
-        <div>
-          <div class="brand-title">SCALP <span>CITY</span> <b>V1</b></div>
-          <div class="brand-sub">TRADE · TEST · VALIDATE · REPEAT</div>
-        </div>
+    <main class="scene" aria-label="Scalp City trading room">
+      <div class="room-shell" aria-hidden="true">
+        <div class="ceiling-line ceiling-line-a"></div>
+        <div class="ceiling-line ceiling-line-b"></div>
+        <div class="window-frame window-left"></div>
+        <div class="window-frame window-right"></div>
+        <div class="room-column column-left"></div>
+        <div class="room-column column-right"></div>
+        <div class="floor-grid"></div>
+        <div class="floor-reflection"></div>
       </div>
-      <button class="market-pill" id="marketPill"><span class="dot"></span><span id="marketText">RESEARCH IDLE</span></button>
-    </header>
 
-    <main class="scene">
-      <section class="ticker-row">
-        <article class="ticker-card glass green">
+      <header class="topbar">
+        <div class="brand-sign">
+          <span class="brand-crown">♛</span>
+          <div>
+            <div class="brand-title">SCALP <span>CITY</span></div>
+            <div class="brand-sub">AUTONOMOUS RESEARCH FLOOR · V1</div>
+          </div>
+        </div>
+        <button class="market-beacon" id="marketPill" type="button" aria-label="Research status">
+          <span class="dot"></span><span id="marketText">RESEARCH IDLE</span>
+        </button>
+      </header>
+
+      <section class="ticker-row" aria-label="Market wall">
+        <article class="ticker-card monitor-shell green" data-symbol="QQQ" tabindex="0" role="button" aria-label="Inspect QQQ">
+          <div class="monitor-bezel"></div>
           <div class="ticker-head"><b>QQQ</b><span id="qqqPrice">—</span></div>
           <canvas id="qqqChart" width="500" height="190"></canvas>
+          <div class="monitor-label">NASDAQ NODE</div>
         </article>
-        <article class="ticker-card glass magenta">
+        <article class="ticker-card monitor-shell magenta" data-symbol="SPY" tabindex="0" role="button" aria-label="Inspect SPY">
+          <div class="monitor-bezel"></div>
           <div class="ticker-head"><b>SPY</b><span id="spyPrice">—</span></div>
           <canvas id="spyChart" width="500" height="190"></canvas>
+          <div class="monitor-label">S&P NODE</div>
         </article>
-        <article class="ticker-card glass blue">
+        <article class="ticker-card monitor-shell blue" data-symbol="IWM" tabindex="0" role="button" aria-label="Inspect IWM">
+          <div class="monitor-bezel"></div>
           <div class="ticker-head"><b>IWM</b><span id="iwmPrice">—</span></div>
           <canvas id="iwmChart" width="500" height="190"></canvas>
+          <div class="monitor-label">RUSSELL NODE</div>
         </article>
       </section>
 
-      <section class="workspace">
-        <aside class="scanner glass">
-          <h3>SIGNAL SCANNER</h3>
+      <section class="workspace" aria-label="Research workstation">
+        <aside class="scanner monitor-shell side-monitor left-monitor">
+          <div class="monitor-bezel"></div>
+          <div class="monitor-cap">SIGNAL SCANNER</div>
           <div class="scanner-sub">LIVE RESEARCH THOUGHTS</div>
           <div id="signalLog" class="signal-log"></div>
+          <div class="monitor-foot"></div>
         </aside>
 
-        <article class="main-monitor glass">
+        <article class="main-monitor monitor-shell" id="mainMonitor">
+          <div class="monitor-bezel"></div>
           <div class="monitor-head">
-            <span><b id="mainSymbol">SPY</b> · 1m replay</span>
+            <span><b id="mainSymbol">SPY</b> / 1m REPLAY</span>
             <span id="generationLabel">GEN 0</span>
           </div>
           <canvas id="mainChart" width="1000" height="570"></canvas>
@@ -62,71 +84,79 @@
             <span><i class="legend-line ema"></i>EMA</span>
             <span id="tradeState">WAITING</span>
           </div>
+          <div class="monitor-foot center-foot"></div>
         </article>
 
-        <aside class="right-stack">
-          <section class="earned glass">
-            <small>SIMULATED · SESSION</small>
+        <aside class="right-stack side-monitor right-monitor">
+          <section class="earned monitor-shell">
+            <div class="monitor-bezel"></div>
+            <small>SIMULATED / SESSION</small>
             <strong id="sessionPnl">£0</strong>
             <div><span id="tradeCount">0 trades</span> · <span id="winRate">0% win</span></div>
           </section>
-
-          <section class="leaderboard glass">
-            <h3>🏆 CHALLENGERS</h3>
+          <section class="leaderboard monitor-shell">
+            <div class="monitor-bezel"></div>
+            <h3>CHALLENGERS</h3>
             <div id="leaderRows"></div>
           </section>
         </aside>
       </section>
 
-      <section class="desk-zone">
-        <div class="robot">
+      <section class="desk-zone" aria-label="Operator console">
+        <div class="robot" aria-hidden="true">
+          <div class="robot-glow"></div>
           <div class="antenna"></div>
-          <div class="head"><div class="visor"></div><div class="ear"></div></div>
+          <div class="head"><div class="visor"><span></span><span></span></div><div class="ear"></div></div>
           <div class="neck"></div>
-          <div class="body"><div class="body-light"></div></div>
+          <div class="body"><div class="body-light"></div><div class="chest-mark">SC</div></div>
           <div class="arm arm-l"></div>
           <div class="arm arm-r"></div>
           <div class="chair"></div>
         </div>
+
         <div class="desk">
+          <div class="desk-edge"></div>
           <div class="desk-glow"></div>
-          <div class="keyboard">
+          <div class="keyboard" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
             <span></span><span></span><span></span><span></span><span></span>
             <span></span><span></span><span></span><span></span><span></span>
           </div>
-          <button id="emergencyStop" class="desk-button danger">STOP</button>
-          <button id="syncPulse" class="desk-button safe">SYNC</button>
+          <div class="console-controls">
+            <button id="enterBtn" class="console-key key-green" type="button"><b>RUN</b><small>TRAIN</small></button>
+            <button id="dataBtn" class="console-key key-cyan" type="button"><b>DATA</b><small>FEED</small></button>
+            <button id="githubBtn" class="console-key key-violet" type="button"><b>MEM</b><small>GITHUB</small></button>
+            <button id="exitBtn" class="console-key key-amber locked" type="button"><b>EXIT</b><small>SAVE</small></button>
+          </div>
+          <button id="emergencyStop" class="desk-button danger" type="button"><span></span>STOP</button>
+          <button id="syncPulse" class="desk-button safe" type="button"><span></span>SYNC</button>
         </div>
+
         <div class="floor-ring ring1"></div>
         <div class="floor-ring ring2"></div>
         <div class="floor-ring ring3"></div>
       </section>
 
-      <section class="research-bar glass">
+      <section class="research-bar" aria-label="Session telemetry">
         <div><small>SESSION</small><strong id="runtime">00:00:00</strong></div>
         <div><small>EXPERIMENTS</small><strong id="experimentCount">0</strong></div>
         <div><small>SURVIVORS</small><strong id="survivorCount">0</strong></div>
         <div><small>BEST SCORE</small><strong id="bestScore">—</strong></div>
         <div><small>WORKERS</small><strong id="workerCount">0</strong></div>
       </section>
-    </main>
 
-    <nav class="bottom-nav glass">
-      <button id="enterBtn" class="nav-action primary"><span>⚗</span><b>ENTER</b><small>START TRAINING</small></button>
-      <button id="dataBtn" class="nav-action"><span>▤</span><b>DATA</b><small>CSV / SYNTH</small></button>
-      <button id="githubBtn" class="nav-action"><span>⌁</span><b>GITHUB</b><small>MEMORY</small></button>
-      <button id="exitBtn" class="nav-action locked"><span>⏻</span><b>SAVE + EXIT</b><small>STOP + SYNC</small></button>
-    </nav>
+      <div class="room-vignette" aria-hidden="true"></div>
+    </main>
   </div>
 
   <dialog id="dataDialog" class="modal">
-    <form method="dialog" class="modal-card glass">
-      <div class="modal-head"><h2>Market Data</h2><button value="cancel">✕</button></div>
-      <p>V1 ships with deterministic synthetic QQQ/SPY/IWM candles so the lab works immediately. You can replace a symbol with your own CSV.</p>
-      <label class="field">Symbol
+    <form method="dialog" class="modal-card" aria-label="Market data terminal">
+      <div class="modal-head"><div><small>UTILITY TERMINAL</small><h2>MARKET DATA</h2></div><button value="cancel">✕</button></div>
+      <p>V1 ships with deterministic synthetic QQQ/SPY/IWM candles so the lab works immediately. Replace a symbol with your own CSV at any time.</p>
+      <label class="field">SYMBOL
         <select id="csvSymbol"><option>QQQ</option><option>SPY</option><option>IWM</option></select>
       </label>
-      <label class="file-field">Import CSV
+      <label class="file-field">IMPORT CSV
         <input id="csvInput" type="file" accept=".csv,text/csv" />
       </label>
       <p class="hint">CSV columns: <code>time,open,high,low,close,volume</code></p>
@@ -135,14 +165,14 @@
   </dialog>
 
   <dialog id="githubDialog" class="modal">
-    <form method="dialog" class="modal-card glass" id="githubForm">
-      <div class="modal-head"><h2>GitHub Memory</h2><button value="cancel">✕</button></div>
+    <form method="dialog" class="modal-card" id="githubForm" aria-label="GitHub memory terminal">
+      <div class="modal-head"><div><small>MEMORY TERMINAL</small><h2>GITHUB MEMORY</h2></div><button value="cancel">✕</button></div>
       <p>Use a fine-grained token limited to this repository with <b>Contents: Read and write</b>. The token stays only in this open page/session.</p>
-      <label class="field">Owner<input id="ghOwner" placeholder="your-github-user" autocomplete="off"></label>
-      <label class="field">Repository<input id="ghRepo" placeholder="ScalpCity" autocomplete="off"></label>
-      <label class="field">Branch<input id="ghBranch" value="main" autocomplete="off"></label>
-      <label class="field">Knowledge filename prefix<input id="ghPath" value="knowledge" autocomplete="off"></label>
-      <label class="field">Fine-grained token<input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off"></label>
+      <label class="field">OWNER<input id="ghOwner" placeholder="your-github-user" autocomplete="off"></label>
+      <label class="field">REPOSITORY<input id="ghRepo" placeholder="Scalp-City-1" autocomplete="off"></label>
+      <label class="field">BRANCH<input id="ghBranch" value="main" autocomplete="off"></label>
+      <label class="field">KNOWLEDGE PREFIX<input id="ghPath" value="knowledge" autocomplete="off"></label>
+      <label class="field">FINE-GRAINED TOKEN<input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off"></label>
       <div class="two-buttons">
         <button id="testGithub" type="button" class="wide-btn">TEST + LOAD KNOWLEDGE</button>
         <button value="cancel" class="wide-btn subtle">CLOSE</button>
@@ -152,8 +182,8 @@
   </dialog>
 
   <dialog id="exitDialog" class="modal">
-    <div class="modal-card glass">
-      <div class="modal-head"><h2>Session Save</h2></div>
+    <div class="modal-card">
+      <div class="modal-head"><div><small>SESSION TERMINAL</small><h2>SAVE + EXIT</h2></div></div>
       <div id="exitSteps" class="exit-steps"></div>
       <button id="closeExit" class="wide-btn" style="display:none">CLOSE SESSION</button>
     </div>
