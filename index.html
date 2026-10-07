@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#05030d" />
+  <meta name="theme-color" content="#03020a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Scalp City" />
-  <title>Scalp City V1</title>
+  <title>Research Floor — Scalp City</title>
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="stylesheet" href="./styles.css" />
@@ -15,181 +15,146 @@
 <body>
   <div id="app">
     <canvas id="cityCanvas" aria-hidden="true"></canvas>
-    <div class="city-haze" aria-hidden="true"></div>
+    <div class="scene-bloom" aria-hidden="true"></div>
+    <div class="scene-vignette" aria-hidden="true"></div>
 
-    <main class="scene" aria-label="Scalp City trading room">
-      <div class="room-shell" aria-hidden="true">
-        <div class="ceiling-line ceiling-line-a"></div>
-        <div class="ceiling-line ceiling-line-b"></div>
-        <div class="window-frame window-left"></div>
-        <div class="window-frame window-right"></div>
-        <div class="room-column column-left"></div>
-        <div class="room-column column-right"></div>
-        <div class="floor-grid"></div>
-        <div class="floor-reflection"></div>
-      </div>
-
-      <header class="topbar">
-        <div class="brand-sign">
-          <span class="brand-crown">♛</span>
+    <main class="scene-ui" aria-label="Scalp City autonomous research floor">
+      <header class="scene-header">
+        <div class="brand-sign" aria-label="Scalp City V1">
+          <span class="crown" aria-hidden="true">♛</span>
           <div>
-            <div class="brand-title">SCALP <span>CITY</span></div>
-            <div class="brand-sub">AUTONOMOUS RESEARCH FLOOR · V1</div>
+            <div class="brand-title">SCALP <span>CITY</span><b>V1</b></div>
+            <div class="brand-sub">AUTONOMOUS RESEARCH FLOOR</div>
           </div>
         </div>
-        <button class="market-beacon" id="marketPill" type="button" aria-label="Research status">
-          <span class="dot"></span><span id="marketText">RESEARCH IDLE</span>
-        </button>
+        <div class="market-beacon" id="marketPill" role="status" aria-label="Research status">
+          <span class="dot" aria-hidden="true"></span><span id="marketText">RESEARCH IDLE</span>
+        </div>
       </header>
 
-      <section class="ticker-row" aria-label="Market wall">
-        <article class="ticker-card monitor-shell green" data-symbol="QQQ" tabindex="0" role="button" aria-label="Inspect QQQ">
-          <div class="monitor-bezel"></div>
-          <div class="ticker-head"><b>QQQ</b><span id="qqqPrice">—</span></div>
-          <canvas id="qqqChart" width="500" height="190"></canvas>
-          <div class="monitor-label">NASDAQ NODE</div>
-        </article>
-        <article class="ticker-card monitor-shell magenta" data-symbol="SPY" tabindex="0" role="button" aria-label="Inspect SPY">
-          <div class="monitor-bezel"></div>
-          <div class="ticker-head"><b>SPY</b><span id="spyPrice">—</span></div>
-          <canvas id="spyChart" width="500" height="190"></canvas>
-          <div class="monitor-label">S&P NODE</div>
-        </article>
-        <article class="ticker-card monitor-shell blue" data-symbol="IWM" tabindex="0" role="button" aria-label="Inspect IWM">
-          <div class="monitor-bezel"></div>
-          <div class="ticker-head"><b>IWM</b><span id="iwmPrice">—</span></div>
-          <canvas id="iwmChart" width="500" height="190"></canvas>
-          <div class="monitor-label">RUSSELL NODE</div>
-        </article>
+      <section class="ticker-bank" aria-label="Market wall">
+        <button class="monitor ticker-monitor green" data-symbol="QQQ" type="button" aria-label="Inspect QQQ">
+          <span class="screen-glass" aria-hidden="true"></span>
+          <span class="ticker-head"><b>QQQ</b><em id="qqqPrice">—</em></span>
+          <canvas id="qqqChart" width="500" height="190" aria-hidden="true"></canvas>
+          <span class="monitor-id">NODE / NASDAQ</span>
+        </button>
+        <button class="monitor ticker-monitor magenta active" data-symbol="SPY" type="button" aria-label="Inspect SPY">
+          <span class="screen-glass" aria-hidden="true"></span>
+          <span class="ticker-head"><b>SPY</b><em id="spyPrice">—</em></span>
+          <canvas id="spyChart" width="500" height="190" aria-hidden="true"></canvas>
+          <span class="monitor-id">NODE / S&amp;P</span>
+        </button>
+        <button class="monitor ticker-monitor cyan" data-symbol="IWM" type="button" aria-label="Inspect IWM">
+          <span class="screen-glass" aria-hidden="true"></span>
+          <span class="ticker-head"><b>IWM</b><em id="iwmPrice">—</em></span>
+          <canvas id="iwmChart" width="500" height="190" aria-hidden="true"></canvas>
+          <span class="monitor-id">NODE / RUSSELL</span>
+        </button>
       </section>
 
-      <section class="workspace" aria-label="Research workstation">
-        <aside class="scanner monitor-shell side-monitor left-monitor">
-          <div class="monitor-bezel"></div>
-          <div class="monitor-cap">SIGNAL SCANNER</div>
+      <section class="monitor-wall" aria-label="Research workstation">
+        <aside class="monitor side-monitor scanner-monitor">
+          <span class="screen-glass" aria-hidden="true"></span>
+          <div class="monitor-cap gold">SIGNAL SCANNER</div>
           <div class="scanner-sub">LIVE RESEARCH THOUGHTS</div>
-          <div id="signalLog" class="signal-log"></div>
-          <div class="monitor-foot"></div>
+          <div id="signalLog" class="signal-log" role="log" aria-live="polite"></div>
+          <span class="monitor-id">CHAN / 01</span>
         </aside>
 
-        <article class="main-monitor monitor-shell" id="mainMonitor">
-          <div class="monitor-bezel"></div>
-          <div class="monitor-head">
-            <span><b id="mainSymbol">SPY</b> / 1m REPLAY</span>
-            <span id="generationLabel">GEN 0</span>
-          </div>
-          <canvas id="mainChart" width="1000" height="570"></canvas>
+        <article class="monitor main-monitor" id="mainMonitor">
+          <span class="screen-glass" aria-hidden="true"></span>
+          <div class="monitor-head"><span><b id="mainSymbol">SPY</b> / 1m REPLAY</span><span id="generationLabel">GEN 0</span></div>
+          <canvas id="mainChart" width="1000" height="570" aria-label="Price chart"></canvas>
           <div class="chart-legend">
             <span><i class="legend-line vwap"></i>VWAP</span>
             <span><i class="legend-line ema"></i>EMA</span>
             <span id="tradeState">WAITING</span>
           </div>
-          <div class="monitor-foot center-foot"></div>
+          <span class="monitor-id">CORE / STRATEGY</span>
         </article>
 
-        <aside class="right-stack side-monitor right-monitor">
-          <section class="earned monitor-shell">
-            <div class="monitor-bezel"></div>
+        <aside class="right-rack">
+          <section class="monitor pnl-monitor">
+            <span class="screen-glass" aria-hidden="true"></span>
             <small>SIMULATED / SESSION</small>
-            <strong id="sessionPnl">£0</strong>
+            <strong id="sessionPnl">+£0</strong>
             <div><span id="tradeCount">0 trades</span> · <span id="winRate">0% win</span></div>
           </section>
-          <section class="leaderboard monitor-shell">
-            <div class="monitor-bezel"></div>
-            <h3>CHALLENGERS</h3>
+          <section class="monitor leaderboard-monitor">
+            <span class="screen-glass" aria-hidden="true"></span>
+            <div class="monitor-cap gold">CHALLENGERS</div>
             <div id="leaderRows"></div>
           </section>
         </aside>
       </section>
 
-      <section class="desk-zone" aria-label="Operator console">
-        <div class="robot" aria-hidden="true">
-          <div class="robot-glow"></div>
-          <div class="antenna"></div>
-          <div class="head"><div class="visor"><span></span><span></span></div><div class="ear"></div></div>
-          <div class="neck"></div>
-          <div class="body"><div class="body-light"></div><div class="chest-mark">SC</div></div>
-          <div class="arm arm-l"></div>
-          <div class="arm arm-r"></div>
-          <div class="chair"></div>
+      <section class="operator-console" aria-label="Operator console">
+        <div class="console-deck" aria-hidden="true"></div>
+        <div class="console-keys">
+          <button id="enterBtn" class="console-key key-green" type="button"><b>RUN</b><small>TRAIN</small></button>
+          <button id="dataBtn" class="console-key key-cyan" type="button"><b>DATA</b><small>FEED</small></button>
+          <button id="githubBtn" class="console-key key-violet" type="button"><b>MEM</b><small>GITHUB</small></button>
+          <button id="exitBtn" class="console-key key-gold locked" type="button" disabled><b>EXIT</b><small>SAVE</small></button>
         </div>
-
-        <div class="desk">
-          <div class="desk-edge"></div>
-          <div class="desk-glow"></div>
-          <div class="keyboard" aria-hidden="true">
-            <span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <div class="console-controls">
-            <button id="enterBtn" class="console-key key-green" type="button"><b>RUN</b><small>TRAIN</small></button>
-            <button id="dataBtn" class="console-key key-cyan" type="button"><b>DATA</b><small>FEED</small></button>
-            <button id="githubBtn" class="console-key key-violet" type="button"><b>MEM</b><small>GITHUB</small></button>
-            <button id="exitBtn" class="console-key key-amber locked" type="button"><b>EXIT</b><small>SAVE</small></button>
-          </div>
-          <button id="emergencyStop" class="desk-button danger" type="button"><span></span>STOP</button>
-          <button id="syncPulse" class="desk-button safe" type="button"><span></span>SYNC</button>
+        <div class="utility-keys">
+          <button id="syncPulse" class="round-key sync" type="button" disabled><span></span><b>SYNC</b></button>
+          <button id="emergencyStop" class="round-key stop" type="button" disabled><span></span><b>STOP</b></button>
         </div>
-
-        <div class="floor-ring ring1"></div>
-        <div class="floor-ring ring2"></div>
-        <div class="floor-ring ring3"></div>
       </section>
 
-      <section class="research-bar" aria-label="Session telemetry">
+      <section class="telemetry-rail" aria-label="Session telemetry">
         <div><small>SESSION</small><strong id="runtime">00:00:00</strong></div>
         <div><small>EXPERIMENTS</small><strong id="experimentCount">0</strong></div>
         <div><small>SURVIVORS</small><strong id="survivorCount">0</strong></div>
         <div><small>BEST SCORE</small><strong id="bestScore">—</strong></div>
         <div><small>WORKERS</small><strong id="workerCount">0</strong></div>
       </section>
-
-      <div class="room-vignette" aria-hidden="true"></div>
     </main>
   </div>
 
+  <div id="toastViewport" class="toast-viewport" aria-live="polite" aria-atomic="true"></div>
+
   <dialog id="dataDialog" class="modal">
-    <form method="dialog" class="modal-card" aria-label="Market data terminal">
-      <div class="modal-head"><div><small>UTILITY TERMINAL</small><h2>MARKET DATA</h2></div><button value="cancel">✕</button></div>
-      <p>V1 ships with deterministic synthetic QQQ/SPY/IWM candles so the lab works immediately. Replace a symbol with your own CSV at any time.</p>
+    <form method="dialog" class="terminal" aria-labelledby="dataTitle" novalidate>
+      <div class="modal-head"><div><small>UTILITY TERMINAL</small><h2 id="dataTitle">MARKET DATA</h2></div><button value="cancel" type="submit" aria-label="Close market data">✕</button></div>
+      <p>Scalp City ships with deterministic synthetic QQQ/SPY/IWM candles. Replace any node with your own CSV.</p>
       <label class="field">SYMBOL
         <select id="csvSymbol"><option>QQQ</option><option>SPY</option><option>IWM</option></select>
       </label>
       <label class="file-field">IMPORT CSV
         <input id="csvInput" type="file" accept=".csv,text/csv" />
       </label>
-      <p class="hint">CSV columns: <code>time,open,high,low,close,volume</code></p>
+      <p class="hint">CSV: <code>time,open,high,low,close,volume</code></p>
+      <div id="dataStatus" class="status-line" role="status"></div>
       <button id="resetSynthetic" type="button" class="wide-btn">RESET SYNTHETIC DATA</button>
     </form>
   </dialog>
 
   <dialog id="githubDialog" class="modal">
-    <form method="dialog" class="modal-card" id="githubForm" aria-label="GitHub memory terminal">
-      <div class="modal-head"><div><small>MEMORY TERMINAL</small><h2>GITHUB MEMORY</h2></div><button value="cancel">✕</button></div>
-      <p>Use a fine-grained token limited to this repository with <b>Contents: Read and write</b>. The token stays only in this open page/session.</p>
+    <form method="dialog" class="terminal" id="githubForm" aria-labelledby="githubTitle" novalidate>
+      <div class="modal-head"><div><small>MEMORY TERMINAL</small><h2 id="githubTitle">GITHUB MEMORY</h2></div><button value="cancel" type="submit" aria-label="Close GitHub memory">✕</button></div>
+      <p>Use a fine-grained token limited to this repository with <b>Contents: Read and write</b>. It remains in this open page only.</p>
       <label class="field">OWNER<input id="ghOwner" placeholder="your-github-user" autocomplete="off"></label>
       <label class="field">REPOSITORY<input id="ghRepo" placeholder="Scalp-City-1" autocomplete="off"></label>
       <label class="field">BRANCH<input id="ghBranch" value="main" autocomplete="off"></label>
       <label class="field">KNOWLEDGE PREFIX<input id="ghPath" value="knowledge" autocomplete="off"></label>
-      <label class="field">FINE-GRAINED TOKEN<input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off"></label>
-      <div class="two-buttons">
-        <button id="testGithub" type="button" class="wide-btn">TEST + LOAD KNOWLEDGE</button>
-        <button value="cancel" class="wide-btn subtle">CLOSE</button>
-      </div>
-      <div id="ghStatus" class="status-line">Not connected</div>
+      <label class="field">FINE-GRAINED TOKEN
+        <span class="secret-field"><input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off"><button id="toggleToken" type="button" aria-label="Show token">SHOW</button></span>
+      </label>
+      <div class="two-buttons"><button id="testGithub" type="button" class="wide-btn">TEST + LOAD KNOWLEDGE</button><button value="cancel" class="wide-btn subtle">CLOSE</button></div>
+      <div id="ghStatus" class="status-line" role="status">Not connected</div>
     </form>
   </dialog>
 
   <dialog id="exitDialog" class="modal">
-    <div class="modal-card">
-      <div class="modal-head"><div><small>SESSION TERMINAL</small><h2>SAVE + EXIT</h2></div></div>
+    <div class="terminal" role="document" aria-labelledby="exitTitle">
+      <div class="modal-head"><div><small>SESSION TERMINAL</small><h2 id="exitTitle">SAVE + EXIT</h2></div></div>
       <div id="exitSteps" class="exit-steps"></div>
       <button id="closeExit" class="wide-btn" style="display:none">CLOSE SESSION</button>
     </div>
   </dialog>
 
-  <input id="hiddenCsv" hidden type="file" />
   <script type="module" src="./app.js"></script>
 </body>
 </html>

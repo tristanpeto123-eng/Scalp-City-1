@@ -10,6 +10,7 @@ const state = {
 const DB_NAME = "scalp-city-v1";
 const DB_VERSION = 1;
 let dbPromise = null;
+let sceneCtl = null;
 
 function openDb(){
   if(dbPromise) return dbPromise;
@@ -69,25 +70,32 @@ function redraw(){
   drawMain($("#mainSymbol").textContent||"SPY");
 }
 
-function city(){
+async function city(){
+  try{
+    const mod=await import("./scene3d.js");
+    sceneCtl=mod.initScene3D($("#cityCanvas"));
+  }catch(err){
+    console.warn("3D scene unavailable; using lightweight fallback",err);
+    cityFallback();
+  }
+}
+function cityFallback(){
   const cv=$("#cityCanvas"),c=cv.getContext("2d");let W,H,dpr;
   const resize=()=>{dpr=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+"px";cv.style.height=H+"px";c.setTransform(dpr,0,0,dpr,0,0);paint()};
-  const paint=()=>{c.clearRect(0,0,W,H);
-    const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#12042c");g.addColorStop(.5,"#080515");g.addColorStop(1,"#020207");c.fillStyle=g;c.fillRect(0,0,W,H);
-    const glow=c.createRadialGradient(W*.52,H*.18,0,W*.52,H*.18,W*.8);glow.addColorStop(0,"rgba(118,20,255,.27)");glow.addColorStop(.5,"rgba(255,26,219,.06)");glow.addColorStop(1,"transparent");c.fillStyle=glow;c.fillRect(0,0,W,H*.75);
-    const rnd=mulberry32(991);let x=-20;while(x<W+30){const bw=30+rnd()*62,bh=90+rnd()*280,y=H*.59-bh;c.fillStyle=`rgba(${7+rnd()*8},${5+rnd()*5},${25+rnd()*20},.98)`;c.fillRect(x,y,bw,bh);
-      for(let wx=x+8;wx<x+bw-7;wx+=12)for(let wy=y+12;wy<y+bh-8;wy+=16)if(rnd()>.54){c.fillStyle=rnd()>.25?"rgba(255,211,77,.72)":"rgba(62,203,255,.62)";c.fillRect(wx,wy,3,6)}
-      x+=bw+6+rnd()*10}
-    c.strokeStyle="rgba(126,67,255,.22)";for(let y=H*.61;y<H;y+=32){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}for(let x=0;x<W;x+=44){c.beginPath();c.moveTo(x,H*.61);c.lineTo(W/2+(x-W/2)*2.3,H);c.stroke()}
-  };addEventListener("resize",resize);resize();
+  const paint=()=>{c.clearRect(0,0,W,H);const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#15042f");g.addColorStop(.48,"#080515");g.addColorStop(1,"#020207");c.fillStyle=g;c.fillRect(0,0,W,H);const rnd=mulberry32(991);let x=-20;while(x<W+30){const bw=30+rnd()*62,bh=90+rnd()*280,y=H*.61-bh;c.fillStyle="#080818";c.fillRect(x,y,bw,bh);for(let wx=x+8;wx<x+bw-7;wx+=12)for(let wy=y+12;wy<y+bh-8;wy+=16)if(rnd()>.56){c.fillStyle=rnd()>.25?"rgba(255,211,90,.72)":"rgba(39,215,255,.62)";c.fillRect(wx,wy,3,6)}x+=bw+6+rnd()*10}c.strokeStyle="rgba(111,55,255,.25)";for(let y=H*.62;y<H;y+=30){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}for(let x=0;x<W;x+=44){c.beginPath();c.moveTo(x,H*.62);c.lineTo(W/2+(x-W/2)*2.3,H);c.stroke()}};addEventListener("resize",resize);resize();
 }
 
-function log(msg,type="note"){state.log.unshift({t:new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"}),msg,type});state.log=state.log.slice(0,28);$("#signalLog").innerHTML=state.log.map(l=>`<div class="logline ${l.type}">${l.t} · ${escapeHtml(l.msg)}</div>`).join("")}
-const escapeHtml=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-
+function log(msg,type="note"){
+  state.log.unshift({t:new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"}),msg,type});state.log=state.log.slice(0,28);
+  const frag=document.createDocumentFragment();for(const l of state.log){const row=document.createElement("div");row.className=`logline ${l.type}`;row.textContent=`${l.t} · ${l.msg}`;frag.appendChild(row)}$("#signalLog").replaceChildren(frag)
+}
 function renderLeaderboard(){
-  const rows=state.leaderboard.slice().sort((a,b)=>b.score-a.score).slice(0,5);
-  $("#leaderRows").innerHTML=rows.map((r,i)=>`<div class="leader-row"><span class="rank">${i?i+1:"♛"}</span><span>${r.symbol}-${r.id.slice(-4)} · PF ${r.profitFactor.toFixed(2)}</span><span class="score">${r.score.toFixed(1)}</span></div>`).join("")||'<div class="leader-row"><span>—</span><span>No challengers yet</span><span>—</span></div>';
+  const host=$("#leaderRows"),rows=state.leaderboard.slice().sort((a,b)=>b.score-a.score).slice(0,5),frag=document.createDocumentFragment();
+  const add=(rank,label,score)=>{const row=document.createElement("div");row.className="leader-row";const a=document.createElement("span");a.className="rank";a.textContent=rank;const b=document.createElement("span");b.textContent=label;const c=document.createElement("span");c.className="score";c.textContent=score;row.append(a,b,c);frag.appendChild(row)};
+  if(rows.length)rows.forEach((r,i)=>add(i?String(i+1):"♛",`${r.symbol}-${r.id.slice(-4)} · PF ${r.profitFactor.toFixed(2)}`,r.score.toFixed(1)));else add("—","No challengers yet","—");host.replaceChildren(frag)
+}
+function notify(message,tone="note"){
+  const host=$("#toastViewport"),toast=document.createElement("div");toast.className=`toast ${tone}`;toast.textContent=message;host.replaceChildren(toast);setTimeout(()=>{if(toast.isConnected)toast.remove()},tone==="error"?6500:4200)
 }
 function renderStats(){
   $("#experimentCount").textContent=state.experiments.toLocaleString();$("#survivorCount").textContent=state.survivors.toLocaleString();$("#bestScore").textContent=state.best?state.best.score.toFixed(1):"—";
@@ -102,7 +110,7 @@ function startTraining(){
   if(state.running)return;ensureData();state.running=true;state.startedAt=Date.now();state.sessionId="session_"+new Date().toISOString().replace(/[:.]/g,"-");
   state.experiments=state.survivors=state.sessionPnl=state.trades=state.wins=0;state.generation=0;state.leaderboard=[];state.best=null;state.log=[];
   const hc=Math.max(2,Math.min(4,(navigator.hardwareConcurrency||4)-1));state.workerCount=hc;
-  $("#enterBtn").classList.add("locked");$("#exitBtn").classList.remove("locked");$("#marketPill").classList.add("live");$("#marketText").textContent="RESEARCH ACTIVE";
+  $("#enterBtn").classList.add("locked");$("#enterBtn").disabled=true;$("#exitBtn").classList.remove("locked");$("#exitBtn").disabled=false;$("#syncPulse").disabled=false;$("#emergencyStop").disabled=false;$("#marketPill").classList.add("live");$("#marketText").textContent="RESEARCH ACTIVE";sceneCtl?.setRunning(true);
   log(`Session ${state.sessionId} started`,"good");startTimer();renderStats();
   const symbols=["SPY","QQQ","IWM"];
   for(let i=0;i<hc;i++){const w=new Worker("./training-worker.js");state.workers.push(w);w.onmessage=e=>handleWorker(e.data);w.postMessage({type:"start",workerId:i,symbol:symbols[i%symbols.length],data:state.data[symbols[i%symbols.length]],seed:Date.now()+i*1009,parent:state.best});}
@@ -116,7 +124,7 @@ function handleWorker(m){
     if(state.experiments%10===0) checkpoint();renderStats();
   }
 }
-function stopTraining(){state.running=false;for(const w of state.workers)w.postMessage({type:"stop"});for(const w of state.workers)w.terminate();state.workers=[];state.workerCount=0;stopTimer();$("#marketPill").classList.remove("live");$("#marketText").textContent="RESEARCH IDLE";renderStats()}
+function stopTraining(){state.running=false;$("#emergencyStop").disabled=true;for(const w of state.workers)w.postMessage({type:"stop"});for(const w of state.workers)w.terminate();state.workers=[];state.workerCount=0;stopTimer();$("#marketPill").classList.remove("live");$("#marketText").textContent="RESEARCH IDLE";sceneCtl?.setRunning(false);renderStats()}
 function sessionPayload(){
   return {schemaVersion:"1.0",id:state.sessionId,startedAt:new Date(state.startedAt||Date.now()).toISOString(),endedAt:new Date().toISOString(),runtimeSec:state.startedAt?Math.floor((Date.now()-state.startedAt)/1000):0,
     experiments:state.experiments,survivors:state.survivors,sessionPnl:state.sessionPnl,trades:state.trades,wins:state.wins,best:state.best,leaderboard:state.leaderboard.slice(0,20),log:state.log.slice(0,50),
@@ -163,28 +171,30 @@ async function syncGithub(payload){
 }
 function setGhFromUi(){
   state.github.owner=$("#ghOwner").value.trim();state.github.repo=$("#ghRepo").value.trim();state.github.branch=$("#ghBranch").value.trim()||"main";state.github.path=$("#ghPath").value.trim()||"knowledge";state.github.token=$("#ghToken").value.trim();
-  localStorage.setItem("scalpCityGithubMeta",JSON.stringify({owner:state.github.owner,repo:state.github.repo,branch:state.github.branch,path:state.github.path}));
+  try{localStorage.setItem("scalpCityGithubMeta",JSON.stringify({owner:state.github.owner,repo:state.github.repo,branch:state.github.branch,path:state.github.path}))}catch{}
 }
 function loadGhMeta(){try{const g=JSON.parse(localStorage.getItem("scalpCityGithubMeta")||"{}");Object.assign(state.github,g);$("#ghOwner").value=g.owner||"";$("#ghRepo").value=g.repo||"";$("#ghBranch").value=g.branch||"main";$("#ghPath").value=g.path||"knowledge"}catch{}}
 
 async function saveExit(){
-  if(!state.sessionId){return}$("#exitDialog").showModal();const box=$("#exitSteps");box.innerHTML="";const step=(t,cls="")=>{const e=document.createElement("div");e.className="step "+cls;e.textContent=t;box.appendChild(e);return e};
+  if(!state.sessionId){return}$("#exitDialog").showModal();const box=$("#exitSteps");box.replaceChildren();const step=(t,cls="")=>{const e=document.createElement("div");e.className="step "+cls;e.textContent=t;box.appendChild(e);return e};
   let e=step("Stopping training workers…");stopTraining();e.textContent="✓ Training workers stopped";e.className="step ok";
   e=step("Saving session to iPhone…");const payload=sessionPayload();await idbPut("sessions",payload);await idbPut("meta",{key:"lastSession",value:payload.id});e.textContent="✓ Local checkpoint saved";e.className="step ok";
   if(state.github.owner&&state.github.repo&&state.github.token){
     e=step("Syncing knowledge to GitHub…");try{await syncGithub(payload);e.textContent="✓ GitHub knowledge synced";e.className="step ok"}catch(err){e.textContent="⚠ GitHub sync failed: "+err.message;e.className="step bad";downloadJson(payload)}
   }else{e=step("GitHub not configured — exporting session JSON instead");e.className="step note";downloadJson(payload)}
-  step("SESSION SAFE","ok");$("#closeExit").style.display="block";$("#exitBtn").classList.add("locked");$("#enterBtn").classList.remove("locked");
+  step("SESSION SAFE","ok");$("#closeExit").style.display="block";$("#exitBtn").classList.add("locked");$("#exitBtn").disabled=true;$("#syncPulse").disabled=true;$("#emergencyStop").disabled=true;$("#enterBtn").classList.remove("locked");$("#enterBtn").disabled=false;
 }
 function downloadJson(obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${obj.id||"scalp-city-session"}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
 
 $("#enterBtn").addEventListener("click",startTraining);$("#exitBtn").addEventListener("click",saveExit);$("#emergencyStop").addEventListener("click",()=>{if(state.running){stopTraining();log("Emergency stop","bad")}});
 $("#syncPulse").addEventListener("click",async()=>{await checkpoint();log("Local checkpoint saved","good")});
 $("#dataBtn").addEventListener("click",()=>$("#dataDialog").showModal());$("#githubBtn").addEventListener("click",()=>$("#githubDialog").showModal());
-$("#csvInput").addEventListener("change",async e=>{if(e.target.files[0])try{await parseCsv(e.target.files[0],$("#csvSymbol").value);$("#dataDialog").close()}catch(err){alert(err.message)}});
+$("#csvInput").addEventListener("change",async e=>{if(!e.target.files[0])return;$("#dataStatus").textContent="Loading CSV…";try{await parseCsv(e.target.files[0],$("#csvSymbol").value);$("#dataStatus").textContent="CSV loaded";notify("Market data loaded","ok");$("#dataDialog").close()}catch(err){$("#dataStatus").textContent=err.message;notify(err.message,"error")}});
 $("#resetSynthetic").addEventListener("click",()=>{const s=$("#csvSymbol").value;state.data[s]=generateSynthetic(s);state.importedSymbols.delete(s);redraw();log(`${s} reset to synthetic`,"note")});
 $("#testGithub").addEventListener("click",async()=>{setGhFromUi();try{await loadGithubKnowledge()}catch{}});
 $("#closeExit").addEventListener("click",()=>$("#exitDialog").close());
+$("#toggleToken").addEventListener("click",()=>{const input=$("#ghToken"),show=input.type==="password";input.type=show?"text":"password";$("#toggleToken").textContent=show?"HIDE":"SHOW";$("#toggleToken").setAttribute("aria-label",show?"Hide token":"Show token")});
+document.querySelectorAll(".ticker-monitor").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".ticker-monitor").forEach(x=>x.classList.toggle("active",x===btn));$("#mainSymbol").textContent=btn.dataset.symbol;drawMain(btn.dataset.symbol);notify(`${btn.dataset.symbol} routed to core monitor`)}));
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"&&state.running)checkpoint()});
 window.addEventListener("pagehide",()=>{if(state.running)checkpoint()});
 
