@@ -68,23 +68,26 @@ function redraw(){
   ensureData();drawSpark($("#qqqChart"),state.data.QQQ,"#2dff9a");drawSpark($("#spyChart"),state.data.SPY,"#ff416d");drawSpark($("#iwmChart"),state.data.IWM,"#3ecbff");
   for(const s of ["QQQ","SPY","IWM"]){const a=state.data[s],p=a[a.length-1].close;$("#"+s.toLowerCase()+"Price").textContent=p.toFixed(2)}
   drawMain($("#mainSymbol").textContent||"SPY");
+  sceneCtl?.refresh?.();
 }
 
 async function city(){
   try{
     const mod=await import("./scene3d.js");
-    sceneCtl=mod.initScene3D($("#cityCanvas"));
+    sceneCtl=await mod.initScene3D($("#cityCanvas"));
   }catch(err){
     console.warn("3D scene unavailable; using lightweight fallback",err);
     cityFallback();
   }
 }
 function cityFallback(){
-  const cv=$("#cityCanvas"),c=cv.getContext("2d");let W,H,dpr;
+  document.documentElement.classList.add("scene-fallback");
+  const cv=$("#cityCanvas"),c=cv.getContext("2d");let W,H,dpr,img=null;
+  const paint=()=>{if(!W||!H)return;c.clearRect(0,0,W,H);if(img&&img.complete){const ir=img.width/img.height,vr=W/H;let sw,sh,sx,sy;if(ir>vr){sh=img.height;sw=sh*vr;sx=(img.width-sw)/2;sy=0}else{sw=img.width;sh=sw/vr;sx=0;sy=(img.height-sh)/2}c.drawImage(img,sx,sy,sw,sh,0,0,W,H);const veil=c.createLinearGradient(0,0,0,H);veil.addColorStop(0,"rgba(2,2,8,.04)");veil.addColorStop(.72,"rgba(2,2,8,.12)");veil.addColorStop(1,"rgba(2,2,8,.50)");c.fillStyle=veil;c.fillRect(0,0,W,H)}else{const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#18043d");g.addColorStop(.55,"#070413");g.addColorStop(1,"#020207");c.fillStyle=g;c.fillRect(0,0,W,H)}};
   const resize=()=>{dpr=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+"px";cv.style.height=H+"px";c.setTransform(dpr,0,0,dpr,0,0);paint()};
-  const paint=()=>{c.clearRect(0,0,W,H);const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#15042f");g.addColorStop(.48,"#080515");g.addColorStop(1,"#020207");c.fillStyle=g;c.fillRect(0,0,W,H);const rnd=mulberry32(991);let x=-20;while(x<W+30){const bw=30+rnd()*62,bh=90+rnd()*280,y=H*.61-bh;c.fillStyle="#080818";c.fillRect(x,y,bw,bh);for(let wx=x+8;wx<x+bw-7;wx+=12)for(let wy=y+12;wy<y+bh-8;wy+=16)if(rnd()>.56){c.fillStyle=rnd()>.25?"rgba(255,211,90,.72)":"rgba(39,215,255,.62)";c.fillRect(wx,wy,3,6)}x+=bw+6+rnd()*10}c.strokeStyle="rgba(111,55,255,.25)";for(let y=H*.62;y<H;y+=30){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}for(let x=0;x<W;x+=44){c.beginPath();c.moveTo(x,H*.62);c.lineTo(W/2+(x-W/2)*2.3,H);c.stroke()}};addEventListener("resize",resize);resize();
+  img=new Image();img.onload=paint;img.src="./scalp-city-concept.png";addEventListener("resize",resize,{passive:true});resize();
+  document.getElementById("interactionHint").textContent="3D ENGINE UNAVAILABLE · CONTROLS BELOW";
 }
-
 function log(msg,type="note"){
   state.log.unshift({t:new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"}),msg,type});state.log=state.log.slice(0,28);
   const frag=document.createDocumentFragment();for(const l of state.log){const row=document.createElement("div");row.className=`logline ${l.type}`;row.textContent=`${l.t} · ${l.msg}`;frag.appendChild(row)}$("#signalLog").replaceChildren(frag)
@@ -194,7 +197,7 @@ $("#resetSynthetic").addEventListener("click",()=>{const s=$("#csvSymbol").value
 $("#testGithub").addEventListener("click",async()=>{setGhFromUi();try{await loadGithubKnowledge()}catch{}});
 $("#closeExit").addEventListener("click",()=>$("#exitDialog").close());
 $("#toggleToken").addEventListener("click",()=>{const input=$("#ghToken"),show=input.type==="password";input.type=show?"text":"password";$("#toggleToken").textContent=show?"HIDE":"SHOW";$("#toggleToken").setAttribute("aria-label",show?"Hide token":"Show token")});
-document.querySelectorAll(".ticker-monitor").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".ticker-monitor").forEach(x=>x.classList.toggle("active",x===btn));$("#mainSymbol").textContent=btn.dataset.symbol;drawMain(btn.dataset.symbol);notify(`${btn.dataset.symbol} routed to core monitor`)}));
+document.querySelectorAll(".ticker-monitor").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".ticker-monitor").forEach(x=>x.classList.toggle("active",x===btn));$("#mainSymbol").textContent=btn.dataset.symbol;drawMain(btn.dataset.symbol);sceneCtl?.setSymbol?.(btn.dataset.symbol);sceneCtl?.refresh?.();notify(`${btn.dataset.symbol} routed to core monitor`)}));
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"&&state.running)checkpoint()});
 window.addEventListener("pagehide",()=>{if(state.running)checkpoint()});
 

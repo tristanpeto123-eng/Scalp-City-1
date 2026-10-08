@@ -3,9 +3,9 @@ version: alpha
 name: "Scalp City"
 description: "A cinematic three-dimensional autonomous trading research room where product controls are embedded into a neon physical workstation."
 colors:
-  ink: "#03020A"
-  obsidian: "#070611"
-  screen: "#050715"
+  ink: "#020208"
+  obsidian: "#070610"
+  screen: "#03050D"
   violet: "#6F37FF"
   magenta: "#FF2DCE"
   cyan: "#27D7FF"
@@ -49,7 +49,7 @@ Scalp City is a cinematic 3D neon trading room viewed from inside the operator f
 - **Locale(s) and language policy:** English UI, numeric/data labels kept concise.
 - **Usage scene:** especially iPhone portrait, full-screen and visually immersive; dense live telemetry must remain legible without scrolling the main scene.
 - **Register:** hybrid product/experience. Core actions remain familiar, but the shell is strongly spatial and cinematic.
-- **Memorable signature:** a real WebGL research floor with the operator console and robot physically occupying the lower scene while DOM monitors align with the 3D monitor bank.
+- **Memorable signature:** a real WebGL research floor where chart canvases are mapped onto physical 3D monitor meshes, the robot faces the workstation, console controls are raycastable hardware on the desk, and near-camera room pillars visibly occlude the skyline during camera movement.
 - **Restraint:** charts, log text, forms and session-saving states stay utilitarian and quiet.
 - **Anti-references:** generic SaaS dashboards, rounded glass cards, floating app navigation, flat neon wallpaper, and marketing-site hero layouts.
 - **Token ownership/runtime mapping:** this file mirrors the canonical values implemented as CSS variables in `styles.css`; 3D emissive colors in `scene3d.js` use the same values.
@@ -61,10 +61,10 @@ The base world is near-black `ink`/`obsidian`. Violet and magenta create environ
 Display signage uses a condensed industrial fallback stack. Interface copy uses the system sans stack. Charts, telemetry, logs and control legends use the mono stack. Uppercase is reserved for hardware labels and scene signage, not prose.
 
 ## Layout
-The primary document is one visual viewport with safe-area-aware top signage, a three-monitor market bank, a central six-monitor wall, a lower operator console and a bottom telemetry rail. The main scene itself does not scroll; modal terminals own their internal scrolling. Mobile portrait is the primary composition, with side monitors angled inward and the central monitor closest to the camera.
+The primary document is one visual viewport occupied by a perspective camera: a framed glass city window and ceiling structure establish the room, a neon sign and three-monitor market bank hang above a physical multi-monitor research wall, and a robot, curved desk, hardware props, floor rings and telemetry slab occupy the foreground. The main scene itself does not scroll; modal terminals own their internal scrolling. Mobile portrait is the primary composition, with monitor edges allowed to crop slightly to reinforce camera proximity rather than compress into a dashboard grid.
 
 ## Elevation & Depth
-Depth comes from the WebGL camera, fog, floor reflections, 3D monitor frames, physical desk/robot geometry and restrained monitor perspective. DOM monitor shadows reinforce physical bezels but must not become card elevation. Blur is limited to modal backdrops and atmospheric bloom.
+Depth comes from the WebGL camera, fog, floor reflections, 3D monitor frames, physical desk/robot geometry and restrained monitor perspective. Screens are emissive MeshStandardMaterial surfaces recessed inside lit bezels; depth comes from real mesh thickness, mounting arms, room-shell occlusion, cast shadows, fog and camera parallax rather than CSS card shadows. Blur is limited to modal backdrops and atmospheric bloom.
 
 ## Shapes
 Hardware is mostly squared with small radii and occasional clipped trapezoids; avoid pill-heavy UI. Circular geometry is reserved for physical controls, robot parts and floor rings.
@@ -74,7 +74,7 @@ Hardware is mostly squared with small radii and occasional clipped trapezoids; a
 Interactive controls have explicit hover, focus-visible, pressed and disabled states. Busy state must preserve dimensions. Green indicates active/success, red stop/error, cyan focus/data, gold emphasis.
 
 ### Buttons and actions
-RUN, DATA, MEM and EXIT are physical console keys, not navigation cards. STOP and SYNC are round hardware controls. EXIT remains disabled until a session exists.
+RUN, DATA, MEM and EXIT are physical WebGL console keys activated by raycasting, not navigation cards. STOP and SYNC are round hardware controls. Hidden semantic button twins own the underlying product actions and disabled state; EXIT remains disabled until a session exists.
 
 ### Navigation and data display
 There is no conventional tab bar. Ticker monitors are real buttons that switch the main chart. Telemetry stays in the bottom rail. Charts keep semantic text labels outside the canvas where needed.
@@ -96,3 +96,4 @@ Voice is terse and operational. Charts use green/red candles, gold VWAP and cyan
 - **Do:** keep functional IDs and actions stable while moving their presentation into the scene.
 - **Don't:** reintroduce floating rounded dashboard cards or a mobile bottom-nav aesthetic.
 - **Don't:** use glow as a substitute for depth; depth should come from geometry, lighting and perspective.
+- **Do:** if WebGL/CDN loading fails, show the cinematic concept fallback plus a compact functional control strip rather than restoring the old flat dashboard.

@@ -1,12 +1,12 @@
 {
-  "name": "Scalp City V1",
+  "name": "Scalp City V1 \u2014 3D Research Floor",
   "short_name": "Scalp City",
-  "description": "Serverless browser-based trading strategy research lab.",
+  "description": "Interactive three-dimensional autonomous trading strategy research floor.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#050311",
-  "theme_color": "#09061a",
+  "background_color": "#03020a",
+  "theme_color": "#03020a",
   "orientation": "portrait",
   "icons": [
     {

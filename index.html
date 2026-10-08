@@ -14,103 +14,58 @@
 </head>
 <body>
   <div id="app">
-    <canvas id="cityCanvas" aria-hidden="true"></canvas>
+    <canvas id="cityCanvas" aria-label="Interactive three-dimensional Scalp City research floor"></canvas>
     <div class="scene-bloom" aria-hidden="true"></div>
     <div class="scene-vignette" aria-hidden="true"></div>
 
-    <main class="scene-ui" aria-label="Scalp City autonomous research floor">
-      <header class="scene-header">
-        <div class="brand-sign" aria-label="Scalp City V1">
-          <span class="crown" aria-hidden="true">♛</span>
-          <div>
-            <div class="brand-title">SCALP <span>CITY</span><b>V1</b></div>
-            <div class="brand-sub">AUTONOMOUS RESEARCH FLOOR</div>
-          </div>
-        </div>
-        <div class="market-beacon" id="marketPill" role="status" aria-label="Research status">
-          <span class="dot" aria-hidden="true"></span><span id="marketText">RESEARCH IDLE</span>
-        </div>
-      </header>
+    <header class="hud" aria-label="Scalp City status">
+      <div class="hud-mode"><span class="hud-crown">♛</span><span>SCALP CITY / RESEARCH FLOOR</span></div>
+      <div class="market-beacon" id="marketPill" role="status" aria-live="polite">
+        <span class="dot" aria-hidden="true"></span><span id="marketText">RESEARCH IDLE</span>
+      </div>
+    </header>
 
-      <section class="ticker-bank" aria-label="Market wall">
-        <button class="monitor ticker-monitor green" data-symbol="QQQ" type="button" aria-label="Inspect QQQ">
-          <span class="screen-glass" aria-hidden="true"></span>
-          <span class="ticker-head"><b>QQQ</b><em id="qqqPrice">—</em></span>
-          <canvas id="qqqChart" width="500" height="190" aria-hidden="true"></canvas>
-          <span class="monitor-id">NODE / NASDAQ</span>
-        </button>
-        <button class="monitor ticker-monitor magenta active" data-symbol="SPY" type="button" aria-label="Inspect SPY">
-          <span class="screen-glass" aria-hidden="true"></span>
-          <span class="ticker-head"><b>SPY</b><em id="spyPrice">—</em></span>
-          <canvas id="spyChart" width="500" height="190" aria-hidden="true"></canvas>
-          <span class="monitor-id">NODE / S&amp;P</span>
-        </button>
-        <button class="monitor ticker-monitor cyan" data-symbol="IWM" type="button" aria-label="Inspect IWM">
-          <span class="screen-glass" aria-hidden="true"></span>
-          <span class="ticker-head"><b>IWM</b><em id="iwmPrice">—</em></span>
-          <canvas id="iwmChart" width="500" height="190" aria-hidden="true"></canvas>
-          <span class="monitor-id">NODE / RUSSELL</span>
-        </button>
-      </section>
+    <div class="interaction-hint" id="interactionHint" aria-hidden="true">DRAG TO LOOK · TAP MONITORS / CONSOLE</div>
 
-      <section class="monitor-wall" aria-label="Research workstation">
-        <aside class="monitor side-monitor scanner-monitor">
-          <span class="screen-glass" aria-hidden="true"></span>
-          <div class="monitor-cap gold">SIGNAL SCANNER</div>
-          <div class="scanner-sub">LIVE RESEARCH THOUGHTS</div>
-          <div id="signalLog" class="signal-log" role="log" aria-live="polite"></div>
-          <span class="monitor-id">CHAN / 01</span>
-        </aside>
+    <!-- Functional data sources remain in the DOM for chart rendering and accessibility.
+         The visible monitors and console are real 3D meshes in scene3d.js. -->
+    <section class="scene-sources" aria-label="Scalp City controls and live data">
+      <button class="ticker-monitor" data-symbol="QQQ" type="button" aria-label="Route QQQ to the core monitor">
+        <span>QQQ</span><span id="qqqPrice">—</span><canvas id="qqqChart" width="500" height="190"></canvas>
+      </button>
+      <button class="ticker-monitor" data-symbol="SPY" type="button" aria-label="Route SPY to the core monitor">
+        <span>SPY</span><span id="spyPrice">—</span><canvas id="spyChart" width="500" height="190"></canvas>
+      </button>
+      <button class="ticker-monitor" data-symbol="IWM" type="button" aria-label="Route IWM to the core monitor">
+        <span>IWM</span><span id="iwmPrice">—</span><canvas id="iwmChart" width="500" height="190"></canvas>
+      </button>
 
-        <article class="monitor main-monitor" id="mainMonitor">
-          <span class="screen-glass" aria-hidden="true"></span>
-          <div class="monitor-head"><span><b id="mainSymbol">SPY</b> / 1m REPLAY</span><span id="generationLabel">GEN 0</span></div>
-          <canvas id="mainChart" width="1000" height="570" aria-label="Price chart"></canvas>
-          <div class="chart-legend">
-            <span><i class="legend-line vwap"></i>VWAP</span>
-            <span><i class="legend-line ema"></i>EMA</span>
-            <span id="tradeState">WAITING</span>
-          </div>
-          <span class="monitor-id">CORE / STRATEGY</span>
-        </article>
+      <div id="signalLog" role="log" aria-live="polite"></div>
+      <span id="mainSymbol">SPY</span>
+      <span id="generationLabel">GEN 0</span>
+      <span id="tradeState">WAITING</span>
+      <canvas id="mainChart" width="1000" height="570" aria-label="Core price chart"></canvas>
 
-        <aside class="right-rack">
-          <section class="monitor pnl-monitor">
-            <span class="screen-glass" aria-hidden="true"></span>
-            <small>SIMULATED / SESSION</small>
-            <strong id="sessionPnl">+£0</strong>
-            <div><span id="tradeCount">0 trades</span> · <span id="winRate">0% win</span></div>
-          </section>
-          <section class="monitor leaderboard-monitor">
-            <span class="screen-glass" aria-hidden="true"></span>
-            <div class="monitor-cap gold">CHALLENGERS</div>
-            <div id="leaderRows"></div>
-          </section>
-        </aside>
-      </section>
+      <span id="sessionPnl">+£0</span>
+      <span id="tradeCount">0 trades</span>
+      <span id="winRate">0% win</span>
+      <div id="leaderRows"></div>
 
-      <section class="operator-console" aria-label="Operator console">
-        <div class="console-deck" aria-hidden="true"></div>
-        <div class="console-keys">
-          <button id="enterBtn" class="console-key key-green" type="button"><b>RUN</b><small>TRAIN</small></button>
-          <button id="dataBtn" class="console-key key-cyan" type="button"><b>DATA</b><small>FEED</small></button>
-          <button id="githubBtn" class="console-key key-violet" type="button"><b>MEM</b><small>GITHUB</small></button>
-          <button id="exitBtn" class="console-key key-gold locked" type="button" disabled><b>EXIT</b><small>SAVE</small></button>
-        </div>
-        <div class="utility-keys">
-          <button id="syncPulse" class="round-key sync" type="button" disabled><span></span><b>SYNC</b></button>
-          <button id="emergencyStop" class="round-key stop" type="button" disabled><span></span><b>STOP</b></button>
-        </div>
-      </section>
+      <span id="runtime">00:00:00</span>
+      <span id="experimentCount">0</span>
+      <span id="survivorCount">0</span>
+      <span id="bestScore">—</span>
+      <span id="workerCount">0</span>
 
-      <section class="telemetry-rail" aria-label="Session telemetry">
-        <div><small>SESSION</small><strong id="runtime">00:00:00</strong></div>
-        <div><small>EXPERIMENTS</small><strong id="experimentCount">0</strong></div>
-        <div><small>SURVIVORS</small><strong id="survivorCount">0</strong></div>
-        <div><small>BEST SCORE</small><strong id="bestScore">—</strong></div>
-        <div><small>WORKERS</small><strong id="workerCount">0</strong></div>
-      </section>
-    </main>
+      <nav class="source-actions" aria-label="Research floor controls">
+        <button id="enterBtn" type="button">Run training</button>
+        <button id="dataBtn" type="button">Market data</button>
+        <button id="githubBtn" type="button">GitHub memory</button>
+        <button id="exitBtn" type="button" disabled>Save and exit</button>
+        <button id="syncPulse" type="button" disabled>Save checkpoint</button>
+        <button id="emergencyStop" type="button" disabled>Stop training</button>
+      </nav>
+    </section>
   </div>
 
   <div id="toastViewport" class="toast-viewport" aria-live="polite" aria-atomic="true"></div>
