@@ -1,0 +1,29 @@
+{
+  "schema": "scalp-city.agent.v1",
+  "agentId": "BT-01",
+  "name": "Backtester",
+  "type": "research-validation",
+  "runtime": "browser-web-worker",
+  "autonomy": "on-demand",
+  "doesNotTrade": true,
+  "status": "research-only",
+  "description": "Independently tests research hypotheses across historical daily equity CFD data and evaluates transaction costs and robustness.",
+  "inputs": {
+    "event": "scalp-city:agent-task",
+    "target": "BT-01",
+    "action": "run",
+    "dataset": "point-in-time aligned daily multi-stock OHLCV with optional CFD fees and dividend adjustments",
+    "config": "cost/risk assumptions",
+    "strategyIds": ["CFD-001", "CFD-002", "CFD-003", "CFD-004", "CFD-005", "CFD-006"],
+    "stress": "optional double spread/slippage scenario"
+  },
+  "outputs": {
+    "event": "scalp-city:agent-report",
+    "resultTypes": ["comparison", "cost_waterfall", "equity_curve", "stress_scenario", "validation_warnings"],
+    "consumerAgents": ["Researcher", "Validator", "Risk Manager", "Ranking Agent"]
+  },
+  "permissions": ["historical-data-read", "simulation-only", "local-results-save", "report-publish"],
+  "forbidden": ["broker-order-submit", "position-open", "live-trade", "github-write", "real-money-execution"],
+  "implementationFiles": ["backtester-agent.js", "backtester-agent-worker.js", "cfd-engine.js", "backtester-agent-ui.js"],
+  "version": "1.0.0"
+}

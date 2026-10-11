@@ -1,0 +1,43 @@
+/* The visible 3D room is intentionally untouched. This is a separate overlay terminal. */
+.cfd-launch{pointer-events:auto;min-height:32px;margin-left:auto;margin-right:12px;padding:6px 10px;border:1px solid rgba(39,215,255,.55);background:rgba(3,7,19,.9);color:#8fefff;border-radius:5px;box-shadow:0 0 18px rgba(39,215,255,.13);font:800 9px ui-monospace,monospace;letter-spacing:.09em}
+.cfd-launch:hover,.cfd-launch:focus-visible{border-color:#35ffa7;color:#e4fff5}
+.cfd-modal{width:min(96vw,900px);max-height:95svh;padding:5px}
+.cfd-terminal{max-height:calc(95svh - 10px);overflow:auto;padding:20px 18px 26px}
+.cfd-warning{padding:9px 11px;border-left:3px solid #ffce67;background:rgba(255,206,103,.06);color:#ffdc8c!important;font-weight:700}
+.cfd-status{padding:10px;margin:10px 0;border:1px solid rgba(39,215,255,.28);background:#070b1a;color:#9eeafb;font:800 10px/1.6 ui-monospace,monospace}
+.cfd-status.synthetic{color:#ffd35a;border-color:rgba(255,211,90,.36)}
+.cfd-status.bad{color:#ff728e;border-color:rgba(255,49,95,.48)}
+.cfd-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.cfd-actions button,.cfd-upload{display:inline-flex;align-items:center;justify-content:center;min-height:42px;flex:1;padding:9px 12px;border:1px solid #4e397a;background:#17122a;color:#e8dfff;font:750 10px ui-monospace,monospace;border-radius:4px;text-align:center;cursor:pointer}
+.cfd-actions button.cfd-primary{border-color:#22ccbb;color:#0b171d;background:#43ebd0}
+.cfd-actions button:disabled{opacity:.35;cursor:default}
+.cfd-upload input{position:absolute;left:-99999px;opacity:0;width:1px}
+.cfd-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 12px}
+.cfd-tip{font:11px/1.45 ui-monospace,monospace!important;color:#a9a5b9!important}
+.cfd-tip code{color:#79dded;white-space:normal}
+.cfd-table-wrap{width:100%;max-width:100%;overflow-x:auto;border:1px solid #332850;border-radius:4px;margin:12px 0}
+.cfd-table{width:100%;border-collapse:collapse;font:11px/1.4 ui-monospace,monospace;white-space:nowrap}
+.cfd-table th{text-align:right;color:#b9adce;padding:10px;background:#121026;border-bottom:1px solid #3a3057}
+.cfd-table td{text-align:right;padding:10px;border-bottom:1px solid #262039}
+.cfd-table th:first-child,.cfd-table td:first-child{text-align:left}
+.cfd-table tbody tr{cursor:pointer}.cfd-table tbody tr:hover,.cfd-table tbody tr.active{background:rgba(58,212,240,.08)}
+.cfd-table .positive{color:#35ffa7}.cfd-table .negative{color:#ff416d}
+.cfd-detail{min-height:44px;padding:10px;background:#0c0e20;color:#d6cbec;font:11px/1.6 ui-monospace,monospace;border:1px solid #292443}
+#cfdEquity{display:block;margin:10px 0 15px;width:100%;height:auto;min-height:120px;border:1px solid #28253f;background:#090b18}
+.cfd-footnote{padding-top:12px;border-top:1px solid #25213a}
+@media(max-width:670px){.cfd-launch{font-size:7px;letter-spacing:0;padding:6px;margin-right:7px}.cfd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cfd-table{font-size:9px}.cfd-table th,.cfd-table td{padding:8px 6px}}
+
+/* BT-01 dedicated agent interface */
+.cfd-agent-launch{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.cfd-agent-dot{width:7px;height:7px;display:inline-block;border-radius:50%;background:#43ebd0;box-shadow:0 0 8px #43ebd0}
+.cfd-agent-busy .cfd-agent-dot{background:#ffd35a;box-shadow:0 0 12px #ffd35a;animation:bt01pulse 1.2s infinite}
+@keyframes bt01pulse{50%{opacity:.25}}
+.cfd-agent-info{display:flex;gap:12px;align-items:center;padding:12px;background:rgba(39,215,255,.06);border:1px solid rgba(39,215,255,.3);border-radius:6px;margin-bottom:10px}
+.cfd-agent-icon{flex-shrink:0;display:grid;place-items:center;width:46px;height:46px;border:1px solid #41decc;border-radius:13px;color:#54ffe1;font:900 16px ui-monospace,monospace;background:rgba(39,215,255,.10)}
+.cfd-agent-info strong{font:800 12px ui-monospace,monospace;letter-spacing:.04em}.cfd-agent-info p{margin:4px 0!important;font-size:10px!important}
+.cfd-agent-state{margin-left:auto;padding:5px 8px;border:1px solid rgba(39,215,255,.35);border-radius:4px;color:#82e9df;font:800 9px ui-monospace,monospace}
+.cfd-agent-flow{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;padding:10px;margin-bottom:10px;background:#050814;border:1px solid #25243b;color:#a59dbb;font:800 9px ui-monospace,monospace}
+.cfd-agent-flow span:nth-of-type(2){color:#58e9d7}.cfd-agent-flow b{color:#ffd35a}
+.cfd-history{border-top:1px solid #26233d;margin-top:15px;padding:12px 3px;color:#aaa0c9;font:700 10px/1.8 ui-monospace,monospace}
+.cfd-history-row{font-weight:500;word-break:break-word;border-bottom:1px solid #201c30;padding:5px 0}
+@media(max-width:430px){.cfd-agent-launch{font-size:6.5px!important}.cfd-agent-flow{font-size:7px}.cfd-agent-info strong{font-size:10px}}

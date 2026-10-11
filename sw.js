@@ -1,5 +1,5 @@
-const CACHE='scalp-city-v1-3d-v5';
-const CORE=['./','./index.html','./styles.css','./app.js','./scene3d.js','./training-worker.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./scalp-city-concept.png'];
+const CACHE='scalp-city-v1-3d-v5-BT01-agent-v1';
+const CORE=['./','./index.html','./styles.css','./backtester-agent.css','./backtester-agent-ui.js','./cfd-engine.js','./backtester-agent.js','./backtester-agent-worker.js','./backtester-agent.json','./app.js','./scene3d.js','./training-worker.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./scalp-city-concept.png'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
 });
